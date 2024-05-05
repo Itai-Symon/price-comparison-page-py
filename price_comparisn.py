@@ -25,14 +25,16 @@ def scrape_website(url, product_name):
       
     if 'bestbuy.com' in url:
         # bestbuy.com scraping logic
-        product_containers = soup.select('div.list-item')
-        print('product_containers', product_containers)
-        for container in product_containers:
-            title = container.select_one('div.sku-list-item-price').text.strip()
-            if product_name.lower() in title.lower():
-                price = container.select_one('div.priceView-hero-price .priceView-customer-price span').text.strip()
-                return f"Price on Bestbuy.com: {price}"
+        first_item = soup.find('li', class_='sku-item')
 
+        # Find the div containing the price
+        price_div = first_item.find('div', class_='priceView-customer-price')
+        print('price_div', price_div)
+        # Extract the price text
+        price_span = price_div.find('span', attrs={'aria-hidden': 'true'})
+        price = price_span.text
+        return price
+    
     elif 'walmart.com' in url:
         # Implement walmart.com scraping logic
         pass
