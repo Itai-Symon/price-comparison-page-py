@@ -36,10 +36,19 @@ def scrape_website(url, product_name):
         return price
     
     elif 'walmart.com' in url:
-        # Implement walmart.com scraping logic
-        pass
+       # Find the div containing the price
+        first_item = soup.find('div', {'data-testid' : 'list-view'})
+        print('first_item', first_item)
+        price_div = first_item.find('div', {'data-automation-id': 'product-price'})
+        
+        current_price_element = price_div.find('span', class_='w_iUH7')
+        print('current_price_element', current_price_element)
+        # Extract the price text
+        price = current_price_element.text
+        return price
+
+
     elif 'newegg.com' in url:
-        # Implement newegg.com scraping logic
         pass
     
     return "Product not found"  # Default return value if the product is not found
@@ -49,20 +58,20 @@ def main():
     product_name = input("Enter the product name: ")
     
     bestbuy_url = f"https://www.bestbuy.com/site/searchpage.jsp?st={product_name.replace(' ', '+')}&intl=nosplash"
-    walmart_url = f"https://www.walmart.com/search?q={product_name.replace(' ', '+')}"
+    walmart_url = f"https://www.walmart.com/search?q={product_name.replace(' ', '+')}&intl=nosplash"
     newegg_url = f"https://www.newegg.com/p/pl?d={product_name.replace(' ', '+')}"
     
-    print(f"Searching for '{product_name}' on Bestbuy.com...")
-    bestbuy_price = scrape_website(bestbuy_url, product_name)
-    print(f"Price on Bestbuy.com: {bestbuy_price}")
+    # print(f"Searching for '{product_name}' on Bestbuy.com...")
+    # bestbuy_price = scrape_website(bestbuy_url, product_name)
+    # print(f"Price on Bestbuy.com: {bestbuy_price}")
     
     # print(f"Searching for '{product_name}' on Walmart.com...")
     # walmart_price = scrape_website(walmart_url, product_name)
     # print(f"Price on Walmart.com: {walmart_price}")
     
-    # print(f"Searching for '{product_name}' on Newegg.com...")
-    # newegg_price = scrape_website(newegg_url, product_name)
-    # print(f"Price on Newegg.com: {newegg_price}")
+    print(f"Searching for '{product_name}' on Newegg.com...")
+    newegg_price = scrape_website(newegg_url, product_name)
+    print(f"Price on Newegg.com: {newegg_price}")
 
 if __name__ == "__main__":
     main()
