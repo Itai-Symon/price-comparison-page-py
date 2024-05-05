@@ -47,7 +47,6 @@ def scrape_website(url, product_name):
         price = current_price_element.text
         return price
 
-
     elif 'newegg.com' in url:
         # newegg.com scraping logic
         first_item = soup.find('div', class_='item-container')
@@ -55,43 +54,26 @@ def scrape_website(url, product_name):
         # Find the div containing the price
         price_div = first_item.find('li', class_='price-current')
         print('price_div', price_div)
-        # Extract the price text
-        price_span = price_div.find('strong')
-        price = price_span.text
+        # Extract the currency symbol
+        currency_symbol = price_div.find('strong').previous_sibling.strip()
+        print('currency_symbol', currency_symbol)
+        # Extract the value before the dot
+        price_integer = price_div.find('strong').get_text(strip=True)
+
+        # Extract the value after the dot
+        price_fraction = price_div.find('sup').get_text(strip=True)
+
+        # Concatenate the currency symbol, value before the dot, and value after the dot
+        price = f"{currency_symbol}{price_integer}{price_fraction}"
+
+        # Print the current price
+        print("Current price:", price)
+        
         return price
+       
     
     return "Product not found"  # Default return value if the product is not found
 
-def scrape_newegg_with_selenium(url, product_name):
-    driver = webdriver.Chrome()
-    driver.get(url)
-    # Wait for the popup to appear and close it
-    try:
-        popup = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "changeCountry"))
-        )
-        stay_in_us_button = popup.find_element(By.CSS_SELECTOR, "button.button-m.bg-white:nth-child(3)")
-        stay_in_us_button.click()
-        print("Popup closed.")
-    except:
-        print("Popup not found or unable to close.")
-
-    try:
-        first_item = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, "div.item-container"))
-        )
-
-        # Find the price element within the first item
-        price_element = first_item.find_element(By.CSS_SELECTOR, "li.price-current strong")
-
-        # Extract the price text
-        price = price_element.text
-        print("price", price)   
-    except:
-        print("Unable to find the first product or extract its price.")
-
-    driver.quit()
-    
     
 def main():
     product_name = input("Enter the product name: ")
@@ -109,7 +91,7 @@ def main():
     # print(f"Price on Walmart.com: {walmart_price}")
     
     print(f"Searching for '{product_name}' on Newegg.com...")
-    newegg_price = scrape_newegg_with_selenium(newegg_url, product_name)
+    newegg_price = scrape_website(newegg_url, product_name)
     print(f"Price on Newegg.com: {newegg_price}")
 
 if __name__ == "__main__":
