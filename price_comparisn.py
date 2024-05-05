@@ -56,7 +56,7 @@ def scrape_website(url, product_name):
         print('price_div', price_div)
         # Extract the currency symbol
         currency_symbol = price_div.find('strong').previous_sibling.strip()
-        print('currency_symbol', currency_symbol)
+        
         # Extract the value before the dot
         price_integer = price_div.find('strong').get_text(strip=True)
 
@@ -66,12 +66,8 @@ def scrape_website(url, product_name):
         # Concatenate the currency symbol, value before the dot, and value after the dot
         price = f"{currency_symbol}{price_integer}{price_fraction}"
 
-        # Print the current price
-        print("Current price:", price)
-        
         return price
        
-    
     return "Product not found"  # Default return value if the product is not found
 
     
