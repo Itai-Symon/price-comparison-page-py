@@ -2,10 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import random
 import time
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+
 USER_AGENTS = [
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36',
@@ -78,13 +75,13 @@ def main():
     walmart_url = f"https://www.walmart.com/search?q={product_name.replace(' ', '+')}&intl=nosplash"
     newegg_url = f"https://www.newegg.com/p/pl?d={product_name.replace(' ', '+')}"
     
-    # print(f"Searching for '{product_name}' on Bestbuy.com...")
-    # bestbuy_price = scrape_website(bestbuy_url, product_name)
-    # print(f"Price on Bestbuy.com: {bestbuy_price}")
+    print(f"Searching for '{product_name}' on Bestbuy.com...")
+    bestbuy_price = scrape_website(bestbuy_url, product_name)
+    print(f"Price on Bestbuy.com: {bestbuy_price}")
     
-    # print(f"Searching for '{product_name}' on Walmart.com...")
-    # walmart_price = scrape_website(walmart_url, product_name)
-    # print(f"Price on Walmart.com: {walmart_price}")
+    print(f"Searching for '{product_name}' on Walmart.com...")
+    walmart_price = scrape_website(walmart_url, product_name)
+    print(f"Price on Walmart.com: {walmart_price}")
     
     print(f"Searching for '{product_name}' on Newegg.com...")
     newegg_price = scrape_website(newegg_url, product_name)
