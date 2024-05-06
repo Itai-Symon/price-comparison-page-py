@@ -67,7 +67,6 @@ def scrape_website(url, product_name):
        
     return "Product not found"  # Default return value if the product is not found
 
-    
 def main():
     product_name = input("Enter the product name: ")
     
