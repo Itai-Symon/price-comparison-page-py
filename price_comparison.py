@@ -47,8 +47,15 @@ def scrape_website(url, product_name):
 
         # Extract the URL of the chosen product
         url_container = first_item.find('h4', class_='sku-title')
+        if not url_container:
+            if first_item.find('h4', class_='sku-header'):
+                url_container = first_item.find('h4', class_='sku-header')
+            else:
+                url_container = first_item.find('div', class_='sku-title')
         print('url_container', url_container)
         url = f'https://www.bestbuy.com/{url_container.find('a').get('href')}'
+        if not url.startswith('https://'):
+            url = f'https://www.bestbuy.com{url}'
         print('bestbuy url', url)
 
         return price, url
@@ -57,12 +64,21 @@ def scrape_website(url, product_name):
        # Find the div containing the price
         first_item = soup.find('div', {'data-testid' : 'list-view'})
         print('first_item', first_item)
-
-        # Find the sibling containing the URL
-        url_element = first_item.find_previous_sibling('a', {'link-identifier': True})
-        print('url_element', url_element)
+        if not first_item:
+            first_item = soup.find('ul', {'data-testid' : 'carousel-container'})
+            print('different type first_item', first_item)
+            url_element = first_item.find_previous_sibling('a', {'link-identifier': True})
+            print('url_element', url_element)
+        else:
+             # Find the sibling containing the URL
+            url_element = first_item.find_previous_sibling('a', {'link-identifier': True})
+            print('url_element', url_element)
+        
+        if not url.startswith('https://'):
+            url = f'https://www.walmart.com{url_element.get("href")}'
         # Extract the URL from the href attribute
         url = url_element.get('href')
+       
 
         price_div = first_item.find('div', {'data-automation-id': 'product-price'})
         
@@ -70,8 +86,8 @@ def scrape_website(url, product_name):
         print('current_price_element', current_price_element)
         # Extract the price text
         price_text = current_price_element.text.strip()
-        price = price_text.split('current price')[-1].strip()
-        
+        price = price_text.split('$')[-1].strip()
+        price = f"${price}"
         return price, url
 
     elif 'newegg.com' in url:
@@ -99,6 +115,8 @@ def scrape_website(url, product_name):
 
                 # Extract the URL of the chosen product
                 url = first_item.find('a', class_='item-title').get('href')
+                if not url.startswith('https://'):
+                    url = f'https://www.newegg.com{url}'
                 print('newegg url', url)
                 
                 return price, url
