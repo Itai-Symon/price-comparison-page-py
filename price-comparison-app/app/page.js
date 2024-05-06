@@ -10,6 +10,7 @@ export default function Home() {
     try {
       const response = await fetch(`http://localhost:8000/search?product_name=${productName}`);
       const data = await response.json();
+      console.log('Data:', data);
       setResults(data);
     } catch (error) {
       console.error('Error fetching data:', error);

@@ -44,12 +44,26 @@ def scrape_website(url, product_name):
         # Extract the price text
         price_span = price_div.find('span', attrs={'aria-hidden': 'true'})
         price = price_span.text
-        return price
+
+        # Extract the URL of the chosen product
+        url_container = first_item.find('h4', class_='sku-title')
+        print('url_container', url_container)
+        url = f'https://www.bestbuy.com/{url_container.find('a').get('href')}'
+        print('bestbuy url', url)
+
+        return price, url
     
     elif 'walmart.com' in url:
        # Find the div containing the price
         first_item = soup.find('div', {'data-testid' : 'list-view'})
         print('first_item', first_item)
+
+        # Find the sibling containing the URL
+        url_element = first_item.find_previous_sibling('a', {'link-identifier': True})
+        print('url_element', url_element)
+        # Extract the URL from the href attribute
+        url = url_element.get('href')
+
         price_div = first_item.find('div', {'data-automation-id': 'product-price'})
         
         current_price_element = price_div.find('span', class_='w_iUH7')
@@ -57,7 +71,8 @@ def scrape_website(url, product_name):
         # Extract the price text
         price_text = current_price_element.text.strip()
         price = price_text.split('current price')[-1].strip()
-        return price
+        
+        return price, url
 
     elif 'newegg.com' in url:
         # newegg.com scraping logic
@@ -78,7 +93,10 @@ def scrape_website(url, product_name):
         # Concatenate the currency symbol, value before the dot, and value after the dot
         price = f"{currency_symbol}{price_integer}{price_fraction}"
 
-        return price
+        # Extract the URL of the chosen product
+        url = first_item.find('a', class_='item-title').get('href')
+        print('newegg url', url)
+        return price, url
        
     return "Product not found"  # Default return value if the product is not found
 
@@ -92,22 +110,25 @@ def search_product(product_name: Optional[str] = None):
     newegg_url = f"https://www.newegg.com/p/pl?d={product_name.replace(' ', '+')}"
     
     print(f"Searching for '{product_name}' on Bestbuy.com...")
-    bestbuy_price = scrape_website(bestbuy_url, product_name)
+    bestbuy_price, bestbuy_chosen_product_url = scrape_website(bestbuy_url, product_name)
     print(f"Price on Bestbuy.com: {bestbuy_price}")
     
     print(f"Searching for '{product_name}' on Walmart.com...")
-    walmart_price = scrape_website(walmart_url, product_name)
+    walmart_price, walmart_chosen_product_url = scrape_website(walmart_url, product_name)
     print(f"Price on Walmart.com: {walmart_price}")
     
     print(f"Searching for '{product_name}' on Newegg.com...")
-    newegg_price = scrape_website(newegg_url, product_name)
+    newegg_price, newegg_chosen_product_url = scrape_website(newegg_url, product_name)
     print(f"Price on Newegg.com: {newegg_price}")
 
     return {
         "product_name": product_name,
+        "bestbuy_chosen_product_url": bestbuy_chosen_product_url,
         "bestbuy_price": bestbuy_price,
+        "walmart_chosen_product_url": walmart_chosen_product_url,
         "walmart_price": walmart_price,
-        "newegg_price": newegg_price
+        "newegg_price": newegg_price,
+        "newegg_chosen_product_url": newegg_chosen_product_url
     }
 
 
