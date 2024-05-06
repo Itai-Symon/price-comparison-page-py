@@ -76,27 +76,38 @@ def scrape_website(url, product_name):
 
     elif 'newegg.com' in url:
         # newegg.com scraping logic
-        first_item = soup.find('div', class_='item-container')
-        print('first_item', first_item)
-        # Find the div containing the price
-        price_div = first_item.find('li', class_='price-current')
-        print('price_div', price_div)
-        # Extract the currency symbol
-        currency_symbol = price_div.find('strong').previous_sibling.strip()
+        item_cells = soup.find_all('div', class_='item-cell')
         
-        # Extract the value before the dot
-        price_integer = price_div.find('strong').get_text(strip=True)
+        for item_cell in item_cells:
+            try:
+                first_item = item_cell.find('div', class_='item-container')
+                print('first_item', first_item)
+                # Find the div containing the price
+                price_div = first_item.find('li', class_='price-current')
+                print('price_div', price_div)
+                # Extract the currency symbol
+                currency_symbol = price_div.find('strong').previous_sibling.strip()
+                
+                # Extract the value before the dot
+                price_integer = price_div.find('strong').get_text(strip=True)
 
-        # Extract the value after the dot
-        price_fraction = price_div.find('sup').get_text(strip=True)
+                # Extract the value after the dot
+                price_fraction = price_div.find('sup').get_text(strip=True)
 
-        # Concatenate the currency symbol, value before the dot, and value after the dot
-        price = f"{currency_symbol}{price_integer}{price_fraction}"
+                # Concatenate the currency symbol, value before the dot, and value after the dot
+                price = f"{currency_symbol}{price_integer}{price_fraction}"
 
-        # Extract the URL of the chosen product
-        url = first_item.find('a', class_='item-title').get('href')
-        print('newegg url', url)
-        return price, url
+                # Extract the URL of the chosen product
+                url = first_item.find('a', class_='item-title').get('href')
+                print('newegg url', url)
+                
+                return price, url
+            
+            except Exception as e:
+                print('Error:', e)
+                continue
+
+        return None, None
        
     return "Product not found"  # Default return value if the product is not found
 

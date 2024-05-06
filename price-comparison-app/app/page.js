@@ -88,11 +88,19 @@ const LoadingSpinner = styled.div`
   animation: ${rotate} 1s ease-in-out infinite;
 `;
 
+const LoadingIndicatorContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 30px;
+`;
+
 const LoadingIndicator = () => (
-  <div>
+  <LoadingIndicatorContainer>
     <LoadingSpinner />
     <p>Loading...</p>
-  </div>
+  </LoadingIndicatorContainer>
 );
 
 export default function Home() {
