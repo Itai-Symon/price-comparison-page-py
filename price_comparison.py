@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import random
 import time
+from fastapi import FastAPI, HTTPException
+from typing import Optional
 
 USER_AGENTS = [
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
@@ -10,6 +12,8 @@ USER_AGENTS = [
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
     'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
 ]
+
+app = FastAPI()
 
 def scrape_website(url, product_name):
     headers = {'User-Agent': random.choice(USER_AGENTS)}
@@ -67,8 +71,10 @@ def scrape_website(url, product_name):
        
     return "Product not found"  # Default return value if the product is not found
 
-def main():
-    product_name = input("Enter the product name: ")
+@app.get("/search")
+def search_product(product_name: Optional[str] = None):
+    if not product_name:
+        return {"error": "product_name is required"}
     
     bestbuy_url = f"https://www.bestbuy.com/site/searchpage.jsp?st={product_name.replace(' ', '+')}&intl=nosplash"
     walmart_url = f"https://www.walmart.com/search?q={product_name.replace(' ', '+')}&intl=nosplash"
@@ -86,5 +92,12 @@ def main():
     newegg_price = scrape_website(newegg_url, product_name)
     print(f"Price on Newegg.com: {newegg_price}")
 
-if __name__ == "__main__":
-    main()
+    return {
+        "product_name": product_name,
+        "bestbuy_price": bestbuy_price,
+        "walmart_price": walmart_price,
+        "newegg_price": newegg_price
+    }
+
+
+
