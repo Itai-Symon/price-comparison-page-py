@@ -40,7 +40,7 @@ export default function Home() {
               <td>Best Buy</td>
               <td>
                 {results.bestbuy_price !== 'Product not found' ? (
-                  <a href={`https://www.bestbuy.com/site/searchpage.jsp?st=${productName.replace(' ', '+')}&intl=nosplash`} target="_blank" rel="noopener noreferrer">
+                  <a href={results.bestbuy_chosen_product_url} target="_blank" rel="noopener noreferrer">
                     {productName}
                   </a>
                 ) : (
@@ -53,7 +53,7 @@ export default function Home() {
               <td>Walmart</td>
               <td>
                 {results.walmart_price !== 'Product not found' ? (
-                  <a href={`https://www.walmart.com/search?q=${productName.replace(' ', '+')}&intl=nosplash`} target="_blank" rel="noopener noreferrer">
+                  <a href={results.walmart_chosen_product_url} target="_blank" rel="noopener noreferrer">
                     {productName}
                   </a>
                 ) : (
@@ -66,7 +66,7 @@ export default function Home() {
               <td>Newegg</td>
               <td>
                 {results.newegg_price !== 'Product not found' ? (
-                  <a href={`https://www.newegg.com/p/pl?d=${productName.replace(' ', '+')}`} target="_blank" rel="noopener noreferrer">
+                  <a href={results.newegg_chosen_product_url} target="_blank" rel="noopener noreferrer">
                     {productName}
                   </a>
                 ) : (
