@@ -45,7 +45,8 @@ def scrape_website(url, product_name):
         current_price_element = price_div.find('span', class_='w_iUH7')
         print('current_price_element', current_price_element)
         # Extract the price text
-        price = current_price_element.text
+        price_text = current_price_element.text.strip()
+        price = price_text.split('current price')[-1].strip()
         return price
 
     elif 'newegg.com' in url:
