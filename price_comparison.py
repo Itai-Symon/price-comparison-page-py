@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import random
 import time
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 
 USER_AGENTS = [
@@ -14,6 +15,15 @@ USER_AGENTS = [
 ]
 
 app = FastAPI()
+
+# Allow requests from the Next.js frontend origin
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
 
 def scrape_website(url, product_name):
     headers = {'User-Agent': random.choice(USER_AGENTS)}
