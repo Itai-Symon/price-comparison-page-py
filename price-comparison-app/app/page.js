@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 const Container = styled.div`
   display: flex;
@@ -69,11 +69,39 @@ const ProductLink = styled.a`
   }
 `;
 
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+const LoadingSpinner = styled.div`
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: ${rotate} 1s ease-in-out infinite;
+`;
+
+const LoadingIndicator = () => (
+  <div>
+    <LoadingSpinner />
+    <p>Loading...</p>
+  </div>
+);
+
 export default function Home() {
   const [productName, setProductName] = useState('');
   const [results, setResults] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = async () => {
+    setIsLoading(true);
     try {
       const response = await fetch(`http://localhost:8000/search?product_name=${productName}`);
       const data = await response.json();
@@ -81,6 +109,8 @@ export default function Home() {
       setResults(data);
     } catch (error) {
       console.error('Error fetching data:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -97,7 +127,7 @@ export default function Home() {
         placeholder="Enter product name"
       />
       <SearchButton onClick={handleSearch}>Search</SearchButton>
-      {results && (
+      {isLoading ? <LoadingIndicator /> : results && (
         <Table>
           <thead>
             <tr>
