@@ -36,49 +36,49 @@ def scrape_website(url, product_name):
       
     if 'bestbuy.com' in url:
         # bestbuy.com scraping logic
-        first_item = soup.find('li', class_='sku-item')
+        items = soup.find_all('li', class_='sku-item')
+        for first_item in items:
+            try:
+                # Find the div containing the price
+                price_div = first_item.find('div', class_='priceView-customer-price')
+                print('price_div', price_div)
+                # Extract the price text
+                price_span = price_div.find('span', attrs={'aria-hidden': 'true'})
+                price = price_span.text
 
-        # Find the div containing the price
-        price_div = first_item.find('div', class_='priceView-customer-price')
-        print('price_div', price_div)
-        # Extract the price text
-        price_span = price_div.find('span', attrs={'aria-hidden': 'true'})
-        price = price_span.text
+                # Extract the URL of the chosen product
+                url_container = first_item.find('h4', class_='sku-title')
+                if not url_container:
+                    if first_item.find('h4', class_='sku-header'):
+                        url_container = first_item.find('h4', class_='sku-header')
+                    else:
+                        url_container = first_item.find('div', class_='sku-title')
+                print('url_container', url_container)
+                url = f'https://www.bestbuy.com/{url_container.find('a').get('href')}'
+                if not url.startswith('https://'):
+                    url = f'https://www.bestbuy.com{url}'
+                print('bestbuy url', url)
 
-        # Extract the URL of the chosen product
-        url_container = first_item.find('h4', class_='sku-title')
-        if not url_container:
-            if first_item.find('h4', class_='sku-header'):
-                url_container = first_item.find('h4', class_='sku-header')
-            else:
-                url_container = first_item.find('div', class_='sku-title')
-        print('url_container', url_container)
-        url = f'https://www.bestbuy.com/{url_container.find('a').get('href')}'
-        if not url.startswith('https://'):
-            url = f'https://www.bestbuy.com{url}'
-        print('bestbuy url', url)
-
-        return price, url
+                return price, url
+            
+            except Exception as e:
+                print('Error:', e)
+                continue
     
     elif 'walmart.com' in url:
        # Find the div containing the price
         first_item = soup.find('div', {'data-testid' : 'list-view'})
         print('first_item', first_item)
-        if not first_item:
-            first_item = soup.find('ul', {'data-testid' : 'carousel-container'})
-            print('different type first_item', first_item)
-            url_element = first_item.find_previous_sibling('a', {'link-identifier': True})
-            print('url_element', url_element)
-        else:
-             # Find the sibling containing the URL
-            url_element = first_item.find_previous_sibling('a', {'link-identifier': True})
-            print('url_element', url_element)
+       
+        # Find the sibling containing the URL
+        url_element = first_item.find_previous_sibling('a', {'link-identifier': True})
+        print('url_element', url_element)
         
+        url = url_element.get('href')
+
         if not url.startswith('https://'):
             url = f'https://www.walmart.com{url_element.get("href")}'
         # Extract the URL from the href attribute
-        url = url_element.get('href')
-       
 
         price_div = first_item.find('div', {'data-automation-id': 'product-price'})
         
